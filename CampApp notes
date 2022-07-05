@@ -1,0 +1,77 @@
+Things to install first are: 
+- Express 
+- Mongoose - make sure its the last version 
+- ejs 
+- Node - make user its the most stable version 
+- nodemon
+
+To check if mongoose is installed, do:
+=> npm list mongoose
+
+To check globally:
+=> npm list -g  mongoose
+
+Install Mongoose command, do:
+npm i mongoose 
+- for a specific version e.g. 6.2.8, use:
+npm i mongoose@6.2.8 
+
+To install Nodemon, use command:
+=> npm install --save-dev nodemon
+
+To install the most stable Node verions, do:
+=> sudo n stable
+
+To install that Node version e.g. 16.15.1, do:
+=> nvm install 16.15.1
+
+To double check the installed version do:
+=> npm version
+
+Starting with creating a simple app: 
+
+To install the latest version of NVM and Node, check the link below:
+https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl
+
+1. to create package.json file
+    npm init -y 
+2. In the terminal, you could type; ls to see what file has been created 
+    ls 
+3. To install express and mongoose and ejs, do:
+    npm i express mongoose ejs 
+
+4. created the app.js file 
+
+5. after putting the code, we start the server with: 
+    nodemon app.js 
+If successful? 
+1. It should print any console log(' ') on the terminal 
+2. It should show the same console log phrase on the page once you open http://localhost:3000/ page 
+
+<!-- const express = require('express'); 
+const app = express(); 
+
+app.get('/', (req, res) => {
+    res.send('Hi From YelpCamp')
+})
+
+app.listen(3000, () => {
+    console.log("Serving on Port 3000")
+}) -->
+
+6. To get ejs to work, first we create views directory of folder 
+7. Then we create a home.ejs file with  <h1>This is HOME PAGE - Camp App -</h1>
+8. Then check if page loads that h1 
+
+Next - we are going to create our campground model 
+part 411 - compground model 
+The model will consist of name/title, price, description and location (without longtitude, latitude)
+
+9. We make a models directory, then within it, we create a campground model 
+
+In the next part 412 - we are going to seed some data with some initial campground data so that we can see some progress quickly 
+
+PART 412 - Seeding campgrounds 
+1. will setup some fake campgrounds, some seed data to work with, so that when we create our index route, edit route etc.. we actually have somethign to work with. 
+2. will a file called seeds, which we will loop to make campgrounds. 
+3. two files we have added: 
