@@ -75,3 +75,12 @@ PART 412 - Seeding campgrounds
 1. will setup some fake campgrounds, some seed data to work with, so that when we create our index route, edit route etc.. we actually have somethign to work with. 
 2. will a file called seeds, which we will loop to make campgrounds. 
 3. two files we have added: 
+ - cities.js file 
+ - seedHelpers.js file 
+ both are in the seeds directory 
+
+ PART 413 - Campground Index 
+ We going to do some basic CRUD functionality for Campgrounds 
+ next part, we will do our show page 
+
+ 
