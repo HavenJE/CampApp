@@ -79,7 +79,7 @@ PART 412 - Seeding campgrounds
  - seedHelpers.js file 
  both are in the seeds directory 
 
- 
+
 We going to do some basic CRUD functionality for Campgrounds 
  PART 413 - Campground Index - a UL with hyperlink using anchor tag  
     <a href="/campgrounds/<%= campground._id %>"> <%= campground.title %> </a>
@@ -104,3 +104,13 @@ test that up by writing in the browser => http://localhost:3000/campgrounds and 
 we still have not done any error handling yet, also on the show.ejs template, will have a map, rating and other things that we build gradually! 
 
 test that up by writing in the browser => http://localhost:3000/campgrounds/sfdsfd
+
+PART 415 Campgroud New & Create 
+This requires adding on the form to make a new campground, this requires two different Routes:
+1. New form - served by a GET request 
+2. create route - usually a POST request 
+
+In the new.ejs, you will find name="campgroud[title]" the aim of this, when we send our data via the POST request to our Express app to the server, everything in the request.body will be stored under campground, its just a nice thing you can do to group content together. 
+
+test that in the browser http://localhost:3000/campgrounds/new
+
