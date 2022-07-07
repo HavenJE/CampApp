@@ -34,8 +34,15 @@ app.get('/', (req, res) => {
 // Will set different routes for Campgrounds e.g. campgrounds index "/campgrounds"
 app.get('/campgrounds', async (req, res) => {
     const campgrounds = await Campground.find({});
-    // Then we pass that to a template 
+    // Then we pass that to a template called index.ejs within the campgrounds folder
     res.render('campgrounds/index', { campgrounds })
+})
+
+// Campgrounds show route => eventually going to be the Details Page 
+app.get('/campgrounds/:id', async (req, res) => {
+    // Then we pass that to a template 
+    const campground = await Campground.findById(req.params.id);
+    res.render('campgrounds/show', { campground }); 
 })
 
 app.listen(3000, () => {

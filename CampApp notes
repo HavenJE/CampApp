@@ -79,8 +79,28 @@ PART 412 - Seeding campgrounds
  - seedHelpers.js file 
  both are in the seeds directory 
 
- PART 413 - Campground Index 
- We going to do some basic CRUD functionality for Campgrounds 
+ 
+We going to do some basic CRUD functionality for Campgrounds 
+ PART 413 - Campground Index - a UL with hyperlink using anchor tag  
+    <a href="/campgrounds/<%= campground._id %>"> <%= campground.title %> </a>
+ 
+
+ <!-- // Will set different routes for Campgrounds e.g. campgrounds index "/campgrounds"
+app.get('/campgrounds', async (req, res) => {
+    const campgrounds = await Campground.find({});
+    // Then we pass that to a template called index.ejs within the campgrounds folder
+    res.render('campgrounds/index', { campgrounds })
+}) -->
+test that up by writing in the browser => http://localhost:3000/campgrounds and check for if the list is there 
  next part, we will do our show page 
 
- 
+ PART 414 - Campground show route => eventually going to be our details page 
+
+ <!-- app.get('/campgrounds/:id', async (req, res) => {
+    // Then we pass that to a template 
+    const campground = await Campground.findById(req.params.id);
+    res.render('campgrounds/show', { campground }); 
+}) -->
+we still have not done any error handling yet, also on the show.ejs template, will have a map, rating and other things that we build gradually! 
+
+test that up by writing in the browser => http://localhost:3000/campgrounds/sfdsfd
