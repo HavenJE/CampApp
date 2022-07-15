@@ -3,39 +3,44 @@
 
 const mongoose = require('mongoose');
 const Campground = require('../models/campground');
-const cities = require('./cities'); 
+const cities = require('./cities');
 const { places, descriptors } = require('./seedHelpers'); // this help us pick random place & descriptor 
 
 // The name of the database is yelp-camp - then Colt passed our options e.g. useNewUrl but that for some reason caused Nodemon to crash! 
 mongoose.connect('mongodb://localhost:27017/yelp-camp')
 
-const db = mongoose.connection; 
+const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
 db.once("open", () => {
-    console.log('Database connected'); 
+    console.log('Database connected');
 });
 
 
 // To pick a random number from an array 
-const sample = array => array[Math.floor(Math.random() * array.length)]; 
+const sample = array => array[Math.floor(Math.random() * array.length)];
 
 
 // make an aysnc function - we delete everything, then we make some new campgrounds 
 const seedDB = async () => {
-    await Campground.deleteMany({}); 
+    await Campground.deleteMany({});
     // const c = new Campground({title: 'purple field'}); 
     // await c.save(); 
 
     // below we goingt to pick a random number btw 1-1000 to pick a city from cities.js file that contains 1000 cities data 
-    for(let i = 0; i < 50; i++){
-        const random1000 = Math.floor(Math.random() * 1000) 
+    for (let i = 0; i < 50; i++) {
+        const random1000 = Math.floor(Math.random() * 1000)
+        const price = Math.floor(Math.random() * 20) + 10 
 
         // we make a new Campground and set the location of it 
+        // we updated camp with new properites; image, description, price during 430 session 
         const camp = new Campground({
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
-            title: `${sample(descriptors)} ${sample(places)}`
+            title: `${sample(descriptors)} ${sample(places)}`,
+            image: 'https://source.unsplash.com/collection/483251',
+            description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse cumque ad numquam aut et mollitia laudantium sed officiis aspernatur, consequatur aliquam blanditiis nesciunt accusantium sint eos doloribus aperiam quod accusamus!',
+            price: price
         })
-        await camp.save(); 
+        await camp.save();
     }
 }
 

@@ -114,3 +114,23 @@ In the new.ejs, you will find name="campgroud[title]" the aim of this, when we s
 
 test that in the browser http://localhost:3000/campgrounds/new
 
+PART 416 Campground Edit & Update 
+We need two routes too:
+1. One for the form 
+2. one for submitting the form 
+
+1. first, we created the route 
+2. created the edit.ejs file - copied the new.ejs code into it 
+
+@2:47 - we need to re-populate the values of the title and the location 
+
+@3:56 - Now, talking about submitting the form, we know that forms can only send a GET or POST requests from the browser, so we can fake a PUT, PATCH, DELETE requests using the 
+method override. 
+To install method override: 
+=> npm i method-override
+
+
+PART 416 Campground DELETE functionality 
+
+1. will add a button the is a click to delete 
+2. we need a DELETE route, and the 'id' should be included 

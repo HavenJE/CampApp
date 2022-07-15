@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 // Later on we could add another properties e.g. author, reviews 
 const CampgroundSchema = new Schema({
     title: String, 
-    price: String,
+    image: String,
+    price: Number,
     description: String, 
     location: String
 })
