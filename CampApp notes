@@ -22,8 +22,8 @@ To install Nodemon, use command:
 To install the most stable Node verions, do:
 => sudo n stable
 
-To install that Node version e.g. 16.15.1, do:
-=> nvm install 16.15.1
+To install that Node version e.g. 16.16.0, do:
+=> nvm install 16.16.0
 
 To double check the installed version do:
 => npm version

@@ -2,7 +2,11 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const ejsMate = require('ejs-mate'); 
+const ejsMate = require('ejs-mate');
+const Joi = require('joi');
+const {campgroundSchema} = require('./schemas.js'); 
+const catchAsync = require('./utilities/CatchAsync');
+const ExpressError = require('./utilities/ExpressError');
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
 
@@ -18,7 +22,7 @@ db.once("open", () => {
 const app = express();
 
 // Tell app to use ejs engine 
-app.engine('ejs', ejsMate); 
+app.engine('ejs', ejsMate);
 //Setting up, the veiw engine - where path is the global object and __dirname holds current directory address. Views is the folder where our all web pages will be kept. 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
@@ -26,6 +30,17 @@ app.set('views', path.join(__dirname, 'views'))
 // The extended option allows to choose between parsing the URL-encoded data with the querystring library (when false) or the qs library (when true).
 app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'));
+
+const validateCampground = (req, res, next) => {
+  
+    const { error } = campgroundSchema.validate(req.body)
+    if (error) {
+        const msg = error.details.map(el => el.message).join(', ')
+        throw new ExpressError(msg, 400)
+    } else {
+        next(); 
+    }
+}
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -39,49 +54,69 @@ app.get('/', (req, res) => {
 // })
 
 // Will set different routes for Campgrounds e.g. campgrounds index "/campgrounds"
-app.get('/campgrounds', async (req, res) => {
+app.get('/campgrounds', catchAsync(async (req, res) => {
     const campgrounds = await Campground.find({});
     // Then we pass that to a template called index.ejs within the campgrounds folder
     res.render('campgrounds/index', { campgrounds })
-});
+}));
 
 // New campground route (new)
 app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 })
+
+// This route is for making a new campground 
 // To set the endpoint, the /campgrounds as POST where the form is submitted 
-app.post('/campgrounds', async (req, res) => {
+// We added catchAsync to catch any error and then hand it over by next() to the error handler app.use() at the end of the page. 
+app.post('/campgrounds', validateCampground, catchAsync(async (req, res, next) => {
+    // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`)
-})
+}));
 
 // Campgrounds show route => eventually going to be the Details Page 
-app.get('/campgrounds/:id', async (req, res) => {
+app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     // Then we pass that to a template 
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/show', { campground });
-});
+}));
 
 // Campground Edit & Update - we need to look up the thing we are editing, so that could pre populate the form with the information. 
-app.get('/campgrounds/:id/edit', async (req, res) => {
+app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
     res.render('campgrounds/edit', { campground });
-})
+}));
 
 
 // After installing, requiring method override, we can set the PUT request 
-app.put('/campgrounds/:id', async (req, res) => {
+app.put('/campgrounds/:id', validateCampground, catchAsync(async (req, res) => {
     // res.send('IT WORKED! ITS UPDATED!')
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
     res.redirect(`/campgrounds/${campground._id}`)
-})
+}));
 
-app.delete('/campgrounds/:id', async (req, res) => {
+app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndDelete(id);
-    res.redirect('/campgrounds'); 
+    res.redirect('/campgrounds');
+}));
+
+
+// Here, we are testing our Express error class - app.all => is for every single request - ('*') => referring to every path 
+app.all('*', (req, res, next) => {
+    // res.send('404!!!')
+    next(new ExpressError('Page Not Found', 404)) // we pass the message inside the ExpressError 
+})
+
+// This is our basic error handling - or catcher for any error - the error comes from any of the previous routes and passed into the handler as long as the routes has next()
+app.use((err, req, res, next) => {
+    // res.send('Ooh boy....something went wrong') 
+    // const { statusCode = 500, message = 'Something Went Wrong!' } = err;
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message('Oh No....Something Went Wrong!')
+    res.status(statusCode).render('error', { err })
 })
 
 app.listen(3000, () => {

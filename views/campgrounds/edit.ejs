@@ -27,32 +27,49 @@
         </h1>
 
         <div class="column-3 offset-0">
-            <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST">
+            <form action="/campgrounds/<%= campground._id %>?_method=PUT" method="POST" novalidate
+                class="validated-form">
 
                 <div class="mb-3">
                     <label class="form-label" for="title"> Title </label>
                     <input class="form-control" type="text" id="title" name="campground[title]"
-                        value="<%= campground.title %>">
+                        value="<%= campground.title %>" required>
+                    <div class="valid-feedback">
+                        Looks Good!
+                    </div>
                 </div>
+
 
                 <div class="mb-3">
                     <label class="form-label" for="location"> location </label>
                     <input class="form-control" type="text" id="location" name="campground[location]"
-                        value="<%= campground.location %>">
+                        value="<%= campground.location %>" required>
+                    <div class="valid-feedback">
+                        Looks Good!
+                    </div>
                 </div>
+
 
                 <div class="mb-3">
                     <label class="form-label" for="image"> Image Url</label>
                     <input class="form-control" type="text" id="image" name="campground[image]"
-                        value="<%= campground.image %>">
+                        value="<%= campground.image %>" required>
+                    <div class="valid-feedback">
+                        Looks Good!
+                    </div>
                 </div>
+
 
                 <div class="mb-3">
                     <label class="form-label" for="price"> Campground Price </label>
                     <div class="input-group">
                         <span class="input-group-text" id="price-label">$</span>
                         <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
-                            aria-describedby="price-label" name="campground[price]" value="<%= campground.price %>">
+                            aria-describedby="price-label" name="campground[price]" value="<%= campground.price %>"
+                            required>
+                            <div class="valid-feedback">
+                                Looks Good!
+                            </div>
                     </div>
                 </div>
 
@@ -60,9 +77,12 @@
                 <div class="mb-3">
                     <!-- We don't use the value="" attribute on textarea, so you have to put it btw the opening and closing tags <%= campground.description  %> -->
                     <label class="form-label" for="description"> Description </label>
-                    <textarea class="form-control" type="text" id="description" name="campground[description]">
+                    <textarea class="form-control" type="text" id="description" name="campground[description]" required>
                         <%= campground.description  %> 
                     </textarea>
+                    <div class="valid-feedback">
+                        Looks Good!
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -74,3 +94,26 @@
             <a href="/campgrounds/<%= campground._id %>"> Back to Campgrounds </a>
         </div>
     </div>
+
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.validated-form')
+
+            // Loop over them and prevent submission
+            Array.from(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
