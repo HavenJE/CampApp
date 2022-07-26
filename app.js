@@ -4,11 +4,13 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const Joi = require('joi');
-const {campgroundSchema} = require('./schemas.js'); 
+const { campgroundSchema, reviewSchema } = require('./schemas.js');
 const catchAsync = require('./utilities/CatchAsync');
 const ExpressError = require('./utilities/ExpressError');
 const Campground = require('./models/campground');
 const methodOverride = require('method-override');
+const Review = require('./models/review');
+const review = require('./models/review');
 
 // The name of the database is yelp-camp - then Colt passed our options e.g. useNewUrl but that for some reason caused Nodemon to crash! 
 mongoose.connect('mongodb://localhost:27017/yelp-camp')
@@ -32,13 +34,23 @@ app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'));
 
 const validateCampground = (req, res, next) => {
-  
+
     const { error } = campgroundSchema.validate(req.body)
     if (error) {
         const msg = error.details.map(el => el.message).join(', ')
         throw new ExpressError(msg, 400)
     } else {
-        next(); 
+        next();
+    }
+}
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+    console.log(error)
+    if (error) {
+        const msg = error.details.map(el => el.message).join(', ')
+        throw new ExpressError(msg, 400)
+    } else {
+        next();
     }
 }
 
@@ -78,7 +90,8 @@ app.post('/campgrounds', validateCampground, catchAsync(async (req, res, next) =
 // Campgrounds show route => eventually going to be the Details Page 
 app.get('/campgrounds/:id', catchAsync(async (req, res) => {
     // Then we pass that to a template 
-    const campground = await Campground.findById(req.params.id);
+    const campground = await Campground.findById(req.params.id).populate('reviews');
+    // console.log(campground)
     res.render('campgrounds/show', { campground });
 }));
 
@@ -97,11 +110,32 @@ app.put('/campgrounds/:id', validateCampground, catchAsync(async (req, res) => {
     res.redirect(`/campgrounds/${campground._id}`)
 }));
 
+// Route to remove a campground 
 app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
 }));
+
+// Route to create a review 
+app.post('/campgrounds/:id/reviews', validateReview, catchAsync(async (req, res) => {
+    // res.send('YOU MADE IT!!')
+    const campground = await Campground.findById(req.params.id);
+    const review = new Review(req.body.review); // you wrote .review because in the show.ejs form, you specified the name attribue on the label/input to be review. 
+    campground.reviews.push(review);
+    await review.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`); // we redirect to the show page 
+}))
+
+// route for deleting the review 
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    // res.send('DELETE MY REVIEW!')
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } })
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`); // this will send you back to the campground page 
+}))
 
 
 // Here, we are testing our Express error class - app.all => is for every single request - ('*') => referring to every path 

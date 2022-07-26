@@ -134,3 +134,6 @@ PART 416 Campground DELETE functionality
 
 1. will add a button the is a click to delete 
 2. we need a DELETE route, and the 'id' should be included 
+
+PART 467 Defining the review model 
+1. created another file under model, called review.js 
