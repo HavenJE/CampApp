@@ -54,12 +54,13 @@ router.get('/:id/edit', catchAsync(async (req, res) => {
     res.render('campgrounds/edit', { campground });
 }));
 
-
+// Campground Update Route 
 // After installing, requiring method override, we can set the PUT request 
 router.put('/:id', validateCampground, catchAsync(async (req, res) => {
     // res.send('IT WORKED! ITS UPDATED!')
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
+    req.flash('success', 'Successfuly updated campground!');
     res.redirect(`/campgrounds/${campground._id}`)
 }));
 
@@ -67,6 +68,7 @@ router.put('/:id', validateCampground, catchAsync(async (req, res) => {
 router.delete('/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndDelete(id);
+    req.flash('success', 'Successfuly deleted campground!');
     res.redirect('/campgrounds');
 }));
 
