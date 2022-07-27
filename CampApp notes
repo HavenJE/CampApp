@@ -28,6 +28,9 @@ To install that Node version e.g. 16.16.0, do:
 To double check the installed version do:
 => npm version
 
+If you update VScode, it may go to an old Node & npm version, make sure to use the most udpated version by:
+=> nvm use 16.16.0 // if that is the more updated one🤦‍♂️
+
 Starting with creating a simple app: 
 
 To install the latest version of NVM and Node, check the link below:
