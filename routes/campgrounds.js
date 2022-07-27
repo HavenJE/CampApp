@@ -1,7 +1,7 @@
 const express = require('express');
-const router = express.Router(); 
+const router = express.Router();
 const catchAsync = require('../utilities/CatchAsync');
-const { campgroundSchema} = require('../schemas.js');
+const { campgroundSchema } = require('../schemas.js');
 const ExpressError = require('../utilities/ExpressError');
 const Campground = require('../models/campground');
 
@@ -36,6 +36,7 @@ router.post('/', validateCampground, catchAsync(async (req, res, next) => {
     // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
     const campground = new Campground(req.body.campground);
     await campground.save();
+    req.flash('success', 'Successfuly made a new campground!');
     res.redirect(`/campgrounds/${campground._id}`)
 }));
 

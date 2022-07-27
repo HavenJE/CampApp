@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const session = require('express-session'); 
+const flash = require('connect-flash'); 
 const Joi = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schemas.js');
 const methodOverride = require('method-override');
@@ -48,6 +49,16 @@ const sessionConfig = {
     }
 }
 app.use(session(sessionConfig))
+
+// To set connect-flash
+app.use(flash())
+
+// Define a middleware
+app.use((req, res, next) => {
+    res.locals.success = req.flash('success'); 
+    res.locals.error = req.flash('error'); 
+    next(); 
+})
 
 app.use('/campgrounds', campgrounds)
 app.use('/campgrounds/:id/reviews', reviews) // we won't have acces to :id in the reviews route file becasue these routes are separate, unless we specify {mergeParams: true} to merge the params btw app.js & reviews.js
