@@ -45,12 +45,20 @@ router.get('/:id', catchAsync(async (req, res) => {
     // Then we pass that to a template 
     const campground = await Campground.findById(req.params.id).populate('reviews');
     // console.log(campground)
+    if(!campground){
+        req.flash('error', 'Cannot find that campground!'); 
+       return res.redirect('/campgrounds') // redirect to index page 
+    }
     res.render('campgrounds/show', { campground });
 }));
 
 // Campground Edit & Update - we need to look up the thing we are editing, so that could pre populate the form with the information. 
 router.get('/:id/edit', catchAsync(async (req, res) => {
     const campground = await Campground.findById(req.params.id);
+    if(!campground){
+        req.flash('error', 'Cannot find that campground!'); 
+       return res.redirect('/campgrounds') // redirect to index page 
+    }
     res.render('campgrounds/edit', { campground });
 }));
 
