@@ -8,9 +8,13 @@ const flash = require('connect-flash');
 const Joi = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schemas.js');
 const methodOverride = require('method-override');
+const passport = require('passport'); 
+const localStrategy = require('passport-local'); 
+const User = require('./models/user'); 
 
-const campgrounds = require('./routes/campgrounds'); 
-const reviews = require('./routes/reviews'); 
+const userRoutes = require('./routes/users');  
+const campgroundRoutes = require('./routes/campgrounds'); 
+const reviewRoutes = require('./routes/reviews'); 
 
 // The name of the database is yelp-camp - then Colt passed our options e.g. useNewUrl but that for some reason caused Nodemon to crash! 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', )
@@ -53,15 +57,33 @@ app.use(session(sessionConfig))
 // To set connect-flash
 app.use(flash())
 
+// To set passport authorisation 
+app.use(passport.initialize());
+app.use(passport.session()); 
+passport.use(new localStrategy(User.authenticate())); 
+
+// these two methods below are added in thanks to plugin passport local mongoose
+passport.serializeUser(User.serializeUser()); // this line means how do you store a user in the session 
+passport.deserializeUser(User.deserializeUser()); // this line means how to unstore a user in the session 
+
 // Define a middleware
 app.use((req, res, next) => {
+    res.locals.currentUser = req.user; // All the templates, we should have currentUser
     res.locals.success = req.flash('success'); 
     res.locals.error = req.flash('error'); 
     next(); 
 })
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews) // we won't have acces to :id in the reviews route file becasue these routes are separate, unless we specify {mergeParams: true} to merge the params btw app.js & reviews.js
+// app.get('/fakeUser', async (req, res) => {
+//     // the line below is an instance of the user or can also be called a user object 
+//     const user = new User({email: 'haven@gmail.com', username: 'haven'})
+//     const newUser = await User.register(user, 'haven81') // 'haven81' is the password 
+//     res.send(newUser); 
+// })
+
+app.use('/', userRoutes); 
+app.use('/campgrounds', campgroundRoutes)
+app.use('/campgrounds/:id/reviews', reviewRoutes) // we won't have acces to :id in the reviews route file becasue these routes are separate, unless we specify {mergeParams: true} to merge the params btw app.js & reviews.js
 app.get('/', (req, res) => {
     res.render('home')
 })
