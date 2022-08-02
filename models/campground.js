@@ -13,11 +13,11 @@ const CampgroundSchema = new Schema({
     location: String,
     author: {
         type: Schema.Types.ObjectId, 
-        ref: 'User'
+        ref: 'User' // its going to refer to the User model 
     },
     reviews: [{
         type: Schema.Types.ObjectId,
-        ref: 'Review'
+        ref: 'Review' 
     }]
 })
 

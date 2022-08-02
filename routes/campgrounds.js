@@ -1,23 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const catchAsync = require('../utilities/CatchAsync');
-const { campgroundSchema } = require('../schemas.js');
-const { isLoggedIn } = require('../middleware'); 
 
-const ExpressError = require('../utilities/ExpressError');
+const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
+
 const Campground = require('../models/campground');
 
 
-const validateCampground = (req, res, next) => {
-
-    const { error } = campgroundSchema.validate(req.body)
-    if (error) {
-        const msg = error.details.map(el => el.message).join(', ')
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
 
 // Will set different routes for Campgrounds e.g. campgrounds index "/campgrounds"
 router.get('/', catchAsync(async (req, res) => {
@@ -47,37 +36,46 @@ router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, nex
 // Campgrounds show route => eventually going to be the Details Page 
 router.get('/:id', catchAsync(async (req, res) => {
     // Then we pass that to a template 
-    const campground = await Campground.findById(req.params.id).populate('reviews').populate('author');
+    const campground = await Campground.findById(req.params.id).populate({
+        path: 'reviews',
+        populate: {
+            path: 'author' // populate on each of the reviews their authors 
+        }
+    }).populate('author'); // then separately populate the one author on this campground 
     console.log(campground)
-    if(!campground){
-        req.flash('error', 'Cannot find that campground!'); 
-       return res.redirect('/campgrounds') // redirect to index page 
+    
+    if (!campground) {
+        req.flash('error', 'Cannot find that campground!');
+        return res.redirect('/campgrounds') // redirect to index page 
     }
     res.render('campgrounds/show', { campground });
 }));
 
 // Campground Edit & Update - we need to look up the thing we are editing, so that could pre populate the form with the information. 
-router.get('/:id/edit', isLoggedIn, catchAsync(async (req, res) => {
-    const campground = await Campground.findById(req.params.id);
-    if(!campground){
-        req.flash('error', 'Cannot find that campground!'); 
-       return res.redirect('/campgrounds') // redirect to index page 
+router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
+    const { id } = req.params;
+    // first, find the campground 
+    const campground = await Campground.findById(id);
+    // Second, check if there is no campground at all - then sorry, we can't find it 
+    if (!campground) {
+        req.flash('error', 'Cannot find that campground!');
+        return res.redirect('/campgrounds') // redirect to index page 
     }
     res.render('campgrounds/edit', { campground });
 }));
 
 // Campground Update Route 
 // After installing, requiring method override, we can set the PUT request 
-router.put('/:id', isLoggedIn, validateCampground, catchAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isAuthor, validateCampground, catchAsync(async (req, res) => {
     // res.send('IT WORKED! ITS UPDATED!')
     const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
+    const campground = await Campground.findById(AndUpdate(id, { ...req.body.campground }))
     req.flash('success', 'Successfuly updated campground!');
     res.redirect(`/campgrounds/${campground._id}`)
 }));
 
 // Route to remove a campground 
-router.delete('/:id', isLoggedIn, catchAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isAuthor, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndDelete(id);
     req.flash('success', 'Successfuly deleted campground!');
