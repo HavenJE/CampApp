@@ -140,3 +140,6 @@ PART 416 Campground DELETE functionality
 
 PART 467 Defining the review model 
 1. created another file under model, called review.js 
+
+To run seed file after modifying or adding properties, do:
+=> node seeds/index.js

@@ -34,9 +34,11 @@ router.get('/new', isLoggedIn, (req, res) => {
 // This route is for making a new campground 
 // To set the endpoint, the /campgrounds as POST where the form is submitted 
 // We added catchAsync to catch any error and then hand it over by next() to the error handler router.use() at the end of the page. 
+// Here, we can associate the campground we creating to the with the currnetly logged in user, do it before the save - line 41
 router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, next) => {
     // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
     const campground = new Campground(req.body.campground);
+    campground.author = req.user._id;
     await campground.save();
     req.flash('success', 'Successfuly made a new campground!');
     res.redirect(`/campgrounds/${campground._id}`)
@@ -45,8 +47,8 @@ router.post('/', isLoggedIn, validateCampground, catchAsync(async (req, res, nex
 // Campgrounds show route => eventually going to be the Details Page 
 router.get('/:id', catchAsync(async (req, res) => {
     // Then we pass that to a template 
-    const campground = await Campground.findById(req.params.id).populate('reviews');
-    // console.log(campground)
+    const campground = await Campground.findById(req.params.id).populate('reviews').populate('author');
+    console.log(campground)
     if(!campground){
         req.flash('error', 'Cannot find that campground!'); 
        return res.redirect('/campgrounds') // redirect to index page 

@@ -34,6 +34,7 @@ const seedDB = async () => {
         // we make a new Campground and set the location of it 
         // we updated camp with new properites; image, description, price during 430 session 
         const camp = new Campground({
+            author: '62e69c508b62707cae82ee8e',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             image: 'https://source.unsplash.com/collection/483251',
