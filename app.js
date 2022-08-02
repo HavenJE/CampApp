@@ -11,6 +11,7 @@ const methodOverride = require('method-override');
 const passport = require('passport'); 
 const localStrategy = require('passport-local'); 
 const User = require('./models/user'); 
+const ExpressError = require('./utilities/ExpressError'); 
 
 const userRoutes = require('./routes/users');  
 const campgroundRoutes = require('./routes/campgrounds'); 
