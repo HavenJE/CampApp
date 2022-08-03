@@ -1,17 +1,25 @@
 
+// (process.env.NODE_ENV) is environment variable 
+if(process.env.NODE_ENV !== "production") {
+    require('dotenv').config(); 
+}
+
+console.log(process.env.SECRET)
+console.log(process.env.API_KEY)
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const session = require('express-session'); 
 const flash = require('connect-flash'); 
-const Joi = require('joi');
-const { campgroundSchema, reviewSchema } = require('./schemas.js');
+const ExpressError = require('./utilities/ExpressError'); 
+
 const methodOverride = require('method-override');
 const passport = require('passport'); 
 const localStrategy = require('passport-local'); 
 const User = require('./models/user'); 
-const ExpressError = require('./utilities/ExpressError'); 
+
 
 const userRoutes = require('./routes/users');  
 const campgroundRoutes = require('./routes/campgrounds'); 
