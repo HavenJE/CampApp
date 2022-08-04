@@ -52,11 +52,23 @@
                     <!-- We don't use the value="" attribute on textarea, so you have to put it btw the opening and closing tags <%= campground.description  %> -->
                     <label class="form-label" for="description"> Description </label>
                     <textarea class="form-control" type="text" id="description" name="campground[description]" required>
-                        <%= campground.description  %> 
+                        <%= campground.description %> 
                     </textarea>
                     <div class="valid-feedback">
                         Looks Good!
                     </div>
+                </div>
+
+                <!-- img is an object that has url and filename - we need the index for each img to be able to delete one, hence we use forEach -->
+                <div class="mb-3">
+                    <% campground.images.forEach(function(img, i) {  %> 
+                        <img src="<%= img.thumbnail %>" class="img-thumbnail" alt="">
+                        <div class="form-check-inline">
+                            <!-- To associate each img label with a checkbox, we need an ID for each checkbox that contains the index of each img in the array -->
+                            <input type="checkbox"  id="image-<%= i %>" name="deleteImages[]" value="<%= img.filename %>">
+                        </div>
+                        <label for="image-<%= i %>"> Delete? </label>
+                    <% }) %> 
                 </div>
 
                 <div class="mb-3">
@@ -68,26 +80,3 @@
             <a href="/campgrounds/<%= campground._id %>"> Back to Campgrounds </a>
         </div>
     </div>
-
-    <script>
-        // Example starter JavaScript for disabling form submissions if there are invalid fields
-        (function () {
-            'use strict'
-
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            const forms = document.querySelectorAll('.validated-form')
-
-            // Loop over them and prevent submission
-            Array.from(forms)
-                .forEach(function (form) {
-                    form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-
-                        form.classList.add('was-validated')
-                    }, false)
-                })
-        })()
-    </script>

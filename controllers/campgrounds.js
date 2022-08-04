@@ -1,5 +1,6 @@
 
 const Campground = require('../models/campground');
+const { cloudinary } = require('../cloudinary');
 
 // campground index page 
 module.exports.index = async (req, res) => {
@@ -63,10 +64,19 @@ module.exports.renderEditForm = async (req, res) => {
 module.exports.updateCampground = async (req, res) => {
     // res.send('IT WORKED! ITS UPDATED!')
     const { id } = req.params;
+    console.log(req.body); 
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground })
     const imgs = req.files.map(f => ({ url: f.path, filename: f.filename }));
     campground.images.push(...imgs); // to add more images to the existing ones, we need to push into the imgs with the spread operator 
     await campground.save();
+    if (req.body.deleteImages) {
+        for (let filename of req.body.deleteImages) {
+            await cloudinary.uploader.destroy(filename); // to delete the img filename from cloudinary 
+        }
+        // pull from the images array, all the images where the filename of that image is in the req.body.deleteImages array 🤦‍♂️
+       await campground.updateOne({ $pull: {images: {filename: {$in: req.body.deleteImages}}}})
+       // console.log(campground)
+    }
     req.flash('success', 'Successfuly updated campground!');    
     res.redirect(`/campgrounds/${campground._id}`)
 }
@@ -74,7 +84,7 @@ module.exports.updateCampground = async (req, res) => {
 // delete campground 
 module.exports.deleteCampground = async (req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findByIdAndDelete(id);
+    await Campground.findByIdAndDelete(id);
     req.flash('success', 'Successfuly deleted campground!');
     res.redirect('/campgrounds');
 }

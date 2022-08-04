@@ -8,7 +8,8 @@
         // image: Joi.string().required(),
         locatoin: Joi.string().required(),
         desciption: Joi.string().required()
-    }).required()
+    }).required(),
+    deleteImages: Joi.array()
 }); 
 
 // Review schema 

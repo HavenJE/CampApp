@@ -3,16 +3,23 @@ const Review = require('./review');
 const Schema = mongoose.Schema;
 
 
+// we separated the images from the CampgroundSchema and made it as a separate schema so that we could add a virtual property
+// this is say; every image has a url and filename
+const ImageSchema = new Schema({
+    url: String,
+    filename: String
+})
+
+// setting up a virtual property to resize the images 
+ImageSchema.virtual('thumbnail').get(function () {
+   return this.url.replace('/upload', '/upload/w_200/h_200'); 
+})
+
 // Making our schema - we could write the line below is new mongoose.Schema({ })
 // Later on we could add another properties e.g. author, reviews 
 const CampgroundSchema = new Schema({
     title: String,
-    images: [
-        {
-            url: String,
-            filename: String
-        }
-    ],
+    images: [ImageSchema],
     price: Number,
     description: String,
     location: String,

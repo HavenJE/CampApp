@@ -3,7 +3,7 @@ const Campground = require('../models/campground');
 const Review = require('../models/review');
 
 // create review 
-module.exports.createReveiw = async (req, res) => {
+module.exports.createReview = async (req, res) => {
     // res.send('YOU MADE IT!!')
     const campground = await Campground.findById(req.params.id);
     const review = new Review(req.body.review); // you wrote .review because in the show.ejs form, you specified the name attribue on the label/input to be review. 
