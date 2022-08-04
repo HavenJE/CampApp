@@ -27,17 +27,16 @@ module.exports.createCampground = async (req, res, next) => {
         query: req.body.campground.location,
         limit: 1 
     }).send()
-    res.send(geoData.body.features[0].geometry.coordinates); 
-    // res.send("Okay!")
-    // // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
-    // const campground = new Campground(req.body.campground);
-    // // line below; we are mapping over the array that has been added to req.files by Multer, and we only one to present the image path, and image filename 
-    // campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    // campground.author = req.user._id;
-    // await campground.save();
-    // console.log(campground);
-    // req.flash('success', 'Successfuly made a new campground!');
-    // res.redirect(`/campgrounds/${campground._id}`)
+    // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
+    const campground = new Campground(req.body.campground);
+    campground.geometry = (geoData.body.features[0].geometry); // we need to store all that in our campground by attaching it to req.body.campground
+    // line below; we are mapping over the array that has been added to req.files by Multer, and we only one to present the image path, and image filename 
+    campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    campground.author = req.user._id;
+    await campground.save();
+    console.log(campground);
+    req.flash('success', 'Successfuly made a new campground!');
+    res.redirect(`/campgrounds/${campground._id}`)
 }
 
 // show campground 
