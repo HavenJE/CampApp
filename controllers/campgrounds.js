@@ -1,5 +1,11 @@
 
 const Campground = require('../models/campground');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding'); // you have to specify the what services you going to use 
+// Here we are passing our token 
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+// here we going to instantiate a new MapBox geocoding instance, and pass our access token 
+const geocoder = mbxGeocoding({accessToken: mapBoxToken}); 
+
 const { cloudinary } = require('../cloudinary');
 
 // campground index page 
@@ -17,16 +23,21 @@ module.exports.renderNewForm = (req, res) => {
 // Create campground
 // Here, we can associate the campground we creating to the with the currnetly logged in user, do it before the save 
 module.exports.createCampground = async (req, res, next) => {
-    // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
-
-    const campground = new Campground(req.body.campground);
-    // line below; we are mapping over the array that has been added to req.files by Multer, and we only one to present the image path, and image filename 
-    campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
-    campground.author = req.user._id;
-    await campground.save();
-    console.log(campground);
-    req.flash('success', 'Successfuly made a new campground!');
-    res.redirect(`/campgrounds/${campground._id}`)
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.campground.location,
+        limit: 1 
+    }).send()
+    res.send(geoData.body.features[0].geometry.coordinates); 
+    // res.send("Okay!")
+    // // if (!req.body.Campground) throw new ExpressError('Invalid Campground Data', 400) // 400 code is for incomplete/invalid data 
+    // const campground = new Campground(req.body.campground);
+    // // line below; we are mapping over the array that has been added to req.files by Multer, and we only one to present the image path, and image filename 
+    // campground.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    // campground.author = req.user._id;
+    // await campground.save();
+    // console.log(campground);
+    // req.flash('success', 'Successfuly made a new campground!');
+    // res.redirect(`/campgrounds/${campground._id}`)
 }
 
 // show campground 
