@@ -1,5 +1,5 @@
 // we are going to make this file self-contained so that we can run this file from its own separately from our Node app every time we want to seed our database. 
-// we connect to mangoose 
+// we connect to mongoose 
 
 const mongoose = require('mongoose');
 const Campground = require('../models/campground');
@@ -20,19 +20,19 @@ db.once("open", () => {
 const sample = array => array[Math.floor(Math.random() * array.length)];
 
 
-// make an aysnc function - we delete everything, then we make some new campgrounds 
+// make an async function - we delete everything, then we make some new campgrounds 
 const seedDB = async () => {
     await Campground.deleteMany({});
     // const c = new Campground({title: 'purple field'}); 
     // await c.save(); 
 
-    // below we goingt to pick a random number btw 1-1000 to pick a city from cities.js file that contains 1000 cities data 
-    for (let i = 0; i < 50; i++) {
+    // below we going to pick a random number btw 1-1000 to pick a city from cities.js file that contains 1000 cities data 
+    for (let i = 0; i < 300; i++) {
         const random1000 = Math.floor(Math.random() * 1000)
         const price = Math.floor(Math.random() * 20) + 10 
 
         // we make a new Campground and set the location of it 
-        // we updated camp with new properites; image, description, price during 430 session 
+        // we updated camp with new properties; image, description, price during 430 session 
         const camp = new Campground({
           // This is your User ID 
             author: '62e69c508b62707cae82ee8e',
@@ -43,7 +43,10 @@ const seedDB = async () => {
             geometry: 
             { 
               "type" : "Point", 
-              "coordinates" : [ 153.530209, -27.426684 ]
+              "coordinates" : [ 
+                cities[random1000].longitude,
+                cities[random1000].latitude,
+               ]
             },
             images: [
                 {

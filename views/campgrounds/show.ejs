@@ -148,6 +148,7 @@
     <!-- The script below to connect the script at the end of the page with the JS file showPageMap.js -->
     <!-- mapToken is JS variable that we have access to in showPageMap.js file -->
     <!-- The -process.env.MAPBOX_TOKEN will run as ejs and spit out the token, then we can access that  -->
+    <!-- Ignore the error red lines within the campground variable - VS Code editor does not understand some EJS notations. -->
     <script>
         const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
         const campground = <%-JSON.stringify(campground) %>

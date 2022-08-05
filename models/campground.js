@@ -12,8 +12,10 @@ const ImageSchema = new Schema({
 
 // setting up a virtual property to resize the images 
 ImageSchema.virtual('thumbnail').get(function () {
-   return this.url.replace('/upload', '/upload/w_200/h_200'); 
+    return this.url.replace('/upload', '/upload/w_200/h_200');
 })
+
+const opts = { toJSON: { virtuals: true } }; 
 
 // Making our schema - we could write the line below is new mongoose.Schema({ })
 // Later on we could add another properties e.g. author, reviews 
@@ -22,15 +24,15 @@ const CampgroundSchema = new Schema({
     images: [ImageSchema],
     geometry: {
         type: {
-          type: String, 
-          enum: ['Point'], // 'geometry.type' must be 'Point'
-          required: true
+            type: String,
+            enum: ['Point'], // 'geometry.type' must be 'Point'
+            required: true
         },
         coordinates: {
-          type: [Number],
-          required: true
+            type: [Number],
+            required: true
         }
-      },
+    },
     price: Number,
     description: String,
     location: String,
@@ -42,6 +44,14 @@ const CampgroundSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Review'
     }]
+}, opts); 
+
+// This is meant to work!! But its NOT!
+// This a virtual property that includes markUp for the popUp 
+CampgroundSchema.virtual('properties.popUpMarkup').get(function () {
+    return `
+    <strong> <a href="/campground/${this._id}"> ${this.title} </a> <strong>
+    <p> ${this.description.substring(0, 20)}... </P> `
 })
 
 // 'findOneAndDelete' => is a query middleware and its going to pass in a document (doc) if found and deleted it to the function 
