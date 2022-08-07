@@ -5,8 +5,6 @@
 
         <div class="col-6">
 
-            <div id='map' style='width: 400px; height: 300px;'></div>
-
             <div id="campgroundCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
 
@@ -74,7 +72,7 @@
 
         <div class="col-6">
 
-            <div id='map' ></div>
+            <div id='map' style='width: 100%; height: 300px; margin-bottom: 5px;' ></div>
 
             <% if(currentUser) { %>
                 <h2>Leave a Review</h2>
@@ -151,8 +149,8 @@
     <!-- Ignore the error red lines within the campground variable - VS Code editor does not understand some EJS notations. -->
     <script>
         const mapToken = '<%-process.env.MAPBOX_TOKEN%>';
-        const campground = <%-JSON.stringify(campground) %>
+        const campground = <%- JSON.stringify(campground) %>
     </script>
 
     <!-- This is the MapBox JS - code snippet is located on that path file -->
-<script src="/javascripts/showPageMap.js"></script>
+    <script src="/javascripts/showPageMap.js"></script>

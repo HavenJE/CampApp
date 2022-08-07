@@ -3,11 +3,14 @@
 mapboxgl.accessToken = mapToken;
 // this is how to create a generic map 
 const map = new mapboxgl.Map({
-    container: 'map',
+    container: 'cluster-map',
     style: 'mapbox://styles/mapbox/light-v10',
     center: [-103.5917, 40.6699],
     zoom: 3
 });
+
+// This will add navigation control for the cluster-map 
+map.addControl(new mapboxgl.NavigationControl());
 
 // .on is a method - this where we see the initial loading of the data 
 map.on('load', () => {
