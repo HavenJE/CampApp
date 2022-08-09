@@ -35,6 +35,9 @@
   "devDependencies": {
     "nodemon": "^2.0.19"
   },
+  "engines": {
+    "node": "16.16.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HavenJE/CampApp.git"
