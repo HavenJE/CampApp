@@ -25,12 +25,14 @@ const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const ExpressMongoSanitize = require('express-mongo-sanitize');
+const MongoDBStore = require('connect-mongo');
 
 // The name of the database is yelp-camp - then Colt passed our options e.g. useNewUrl but that for some reason caused Nodemon to crash! 
-// || 'mongodb://localhost:27017/yelp-camp'
-const dbUrl = process.env.DB_URL ;
+// || 
+// process.env.DB_URL
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
-mongoose.connect('mongodb://localhost:27017/yelp-camp');
+mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -59,15 +61,29 @@ app.use(ExpressMongoSanitize({
     replaceWith: '_'
 }))
 
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!'; 
+
+// 
+const store = new MongoDBStore({
+    mongoUrl: dbUrl, // don't use url only 
+    secret: secret,
+    touchAfter: 24 * 60 * 60 // time in seconds 
+})
+
+store.on('error', function(e){
+    console.log('SESSION STORE ERROR!', e)
+})
+
 // To set Express-session
 const sessionConfig = {
+    store: store, 
     name: 'session', // this is to avoid the default name connect.sid that anyone could find when inspect the page under application tab. 
-    secret: 'thisshouldbeabettersecret!',
+    secret: secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        expire: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        expire: Date.now() + 1000 * 60 * 60 * 24 * 7, // time in mili-seconds 
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
