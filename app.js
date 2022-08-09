@@ -1,7 +1,7 @@
 
 // (process.env.NODE_ENV) is environment variable 
-if(process.env.NODE_ENV !== "production") {
-    require('dotenv').config(); 
+if (process.env.NODE_ENV !== "production") {
+    require('dotenv').config();
 }
 
 console.log(process.env.SECRET)
@@ -11,22 +11,26 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
-const session = require('express-session'); 
-const flash = require('connect-flash'); 
-const ExpressError = require('./utilities/ExpressError'); 
+const session = require('express-session');
+const flash = require('connect-flash');
+const ExpressError = require('./utilities/ExpressError');
 
 const methodOverride = require('method-override');
-const passport = require('passport'); 
-const localStrategy = require('passport-local'); 
-const User = require('./models/user'); 
+const passport = require('passport');
+const localStrategy = require('passport-local');
+const User = require('./models/user');
+const helmet = require('helmet');
 
-
-const userRoutes = require('./routes/users');  
-const campgroundRoutes = require('./routes/campgrounds'); 
-const reviewRoutes = require('./routes/reviews'); 
+const userRoutes = require('./routes/users');
+const campgroundRoutes = require('./routes/campgrounds');
+const reviewRoutes = require('./routes/reviews');
+const ExpressMongoSanitize = require('express-mongo-sanitize');
 
 // The name of the database is yelp-camp - then Colt passed our options e.g. useNewUrl but that for some reason caused Nodemon to crash! 
-mongoose.connect('mongodb://localhost:27017/yelp-camp', )
+// || 'mongodb://localhost:27017/yelp-camp'
+const dbUrl = process.env.DB_URL ;
+
+mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -39,7 +43,7 @@ const app = express();
 // Tell app to use ejs engine 
 app.engine('ejs', ejsMate);
 
-//Setting up, the veiw engine - where path is the global object and __dirname holds current directory address. Views is the folder where our all web pages will be kept. 
+//Setting up, the view engine - where path is the global object and __dirname holds current directory address. Views is the folder where our all web pages will be kept. 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
@@ -50,26 +54,35 @@ app.use(methodOverride('_method'));
 // To test hello.js alert
 app.use(express.static(path.join(__dirname, 'public')))
 
+// To sanitize mongo from injection
+app.use(ExpressMongoSanitize({
+    replaceWith: '_'
+}))
+
 // To set Express-session
 const sessionConfig = {
+    name: 'session', // this is to avoid the default name connect.sid that anyone could find when inspect the page under application tab. 
     secret: 'thisshouldbeabettersecret!',
-    resave: false, 
-    saveUninitialized: true, 
+    resave: false,
+    saveUninitialized: true,
     cookie: {
-        httpOnly: true, 
-        expire: Date.now() + 1000 * 60 * 60 * 24 * 7, 
+        httpOnly: true,
+        expire: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
 app.use(session(sessionConfig))
 
 // To set connect-flash
-app.use(flash())
+app.use(flash());
+
+// To set helmet
+// app.use(helmet({ contentSecurityPolicy: false }));
 
 // To set passport authorisation 
 app.use(passport.initialize());
-app.use(passport.session()); 
-passport.use(new localStrategy(User.authenticate())); 
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
 
 // these two methods below are added in thanks to plugin passport local mongoose
 passport.serializeUser(User.serializeUser()); // this line means how do you store a user in the session 
@@ -77,10 +90,11 @@ passport.deserializeUser(User.deserializeUser()); // this line means how to unst
 
 // Define a middleware
 app.use((req, res, next) => {
+    console.log(req.query)
     res.locals.currentUser = req.user; // All the templates, we should have currentUser
-    res.locals.success = req.flash('success'); 
-    res.locals.error = req.flash('error'); 
-    next(); 
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
 })
 
 // app.get('/fakeUser', async (req, res) => {
@@ -90,7 +104,7 @@ app.use((req, res, next) => {
 //     res.send(newUser); 
 // })
 
-app.use('/', userRoutes); 
+app.use('/', userRoutes);
 app.use('/campgrounds', campgroundRoutes)
 app.use('/campgrounds/:id/reviews', reviewRoutes) // we won't have acces to :id in the reviews route file becasue these routes are separate, unless we specify {mergeParams: true} to merge the params btw app.js & reviews.js
 app.get('/', (req, res) => {
