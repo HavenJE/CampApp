@@ -19,7 +19,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const localStrategy = require('passport-local');
 const User = require('./models/user');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
@@ -30,7 +30,7 @@ const ExpressMongoSanitize = require('express-mongo-sanitize');
 // || 'mongodb://localhost:27017/yelp-camp'
 const dbUrl = process.env.DB_URL ;
 
-mongoose.connect(dbUrl);
+mongoose.connect('mongodb://localhost:27017/yelp-camp');
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
