@@ -28,7 +28,7 @@ const ExpressMongoSanitize = require('express-mongo-sanitize');
 const MongoDBStore = require('connect-mongo');
 
 // The name of the database is yelp-camp - then Colt passed our options e.g. useNewUrl but that for some reason caused Nodemon to crash! 
-// || 
+// || 'mongodb://localhost:27017/yelp-camp'
 // process.env.DB_URL
 const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
@@ -63,13 +63,16 @@ app.use(ExpressMongoSanitize({
 
 const secret = process.env.SECRET || 'thisshouldbeabettersecret!'; 
 
-// 
+// If you are using express-session >= 1.10.0 and don't want to resave all the session on database every single time that the user refresh the page, 
+// you can lazy update the session, by limiting a period of time.
+// In order to store the session on MongoDB, we have to set MongoStore 
 const store = new MongoDBStore({
     mongoUrl: dbUrl, // don't use url only 
     secret: secret,
-    touchAfter: 24 * 60 * 60 // time in seconds 
+    touchAfter: 24 * 60 * 60 // time in seconds - once every 24 hours 
 })
 
+// Setting if there is any errors for our MongoStore - then passing that to our sessionConfig line 80 
 store.on('error', function(e){
     console.log('SESSION STORE ERROR!', e)
 })
@@ -87,6 +90,8 @@ const sessionConfig = {
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 }
+
+// The default store of session is the memory store 
 app.use(session(sessionConfig))
 
 // To set connect-flash
