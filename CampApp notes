@@ -163,5 +163,5 @@ then type:
 last step will create a new app and location in heroku 
 4. git remote -v 
 5. git add . 
-6. git commit "Try to deploy"
+6. git commit -m "Try to deploy"
 7. git push heroku master
