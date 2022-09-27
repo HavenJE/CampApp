@@ -65,7 +65,7 @@ const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
 
 // If you are using express-session >= 1.10.0 and don't want to resave all the session on database every single time that the user refresh the page, 
 // you can lazy update the session, by limiting a period of time.
-// In order to store the session on MongoDB, we have to set MongoStore 
+// In order to store our browser session on MongoDB, we have to set MongoDBStore 
 const store = new MongoDBStore({
     mongoUrl: dbUrl, // don't use url only 
     secret: secret,

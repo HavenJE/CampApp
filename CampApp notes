@@ -143,3 +143,25 @@ PART 467 Defining the review model
 
 To run seed file after modifying or adding properties, do:
 => node seeds/index.js
+
+To start Mongodb server do:
+=> sudo service mongodb start
+
+To open Mongo shell, open a separate terminal and type: 
+=> mongo 
+To check what collections you have: 
+=> show collections 
+
+Heroku steps: 
+
+1. install heroku CLI 
+- After that, in terminal: 
+2. type: heroku login 
+3. Make sure you are on the top level of your app, check by doing: => ls 
+then type: 
+=> heroku create 
+last step will create a new app and location in heroku 
+4. git remote -v 
+5. git add . 
+6. git commit "Try to deploy"
+7. git push heroku master
